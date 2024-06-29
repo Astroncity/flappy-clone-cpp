@@ -1,5 +1,7 @@
 #pragma once
 #include "defs.h"
+#include <list>
+using std::list;
 
 class State {
     public:

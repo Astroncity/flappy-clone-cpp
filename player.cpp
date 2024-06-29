@@ -1,17 +1,25 @@
 #include "player.hpp"
-
+#include "pipe.hpp"
+#include "raylib.h"
 
 const char* birdPngPath = "images/bird.png";
 
 
+
 static inline void physicsHandler(Player* plr){
-    if(IsKeyPressed(KEY_SPACE)){
-        plr->velocity.y -= 2;
+    if(plr->frozen) return;
+
+    if(plr->rect.y > 0){
+        if(IsKeyPressed(KEY_SPACE)){
+            plr->velocity.y -= 2;
+        }
+    }
+    else{
+        plr->velocity.y = 2;
     }
     // gravity, 
-    plr->velocity.y += 2 * GetFrameTime();
+    plr->velocity.y += 4 * GetFrameTime();
     
-
     plr->space->pos.x += plr->velocity.x;
     plr->space->pos.y += plr->velocity.y;
 }
@@ -23,25 +31,44 @@ static inline void printPlayerDebug(Player* plr){
 
 
 Player::Player(){
-    this->space = new Space();
-    this->rect.width = 34;
-    this->rect.height = 24;
-    this->velocity = (Vector2){0,0};
-    this->texture = LoadTextureFromImage(LoadImage(birdPngPath));
+    space = new Space();
+    rect.width = 34;
+    rect.height = 24;
+    velocity = (Vector2){0,0};
+    texture = LoadTextureFromImage(LoadImage(birdPngPath));
 }
 
 void Player::drawPlayer(){
     //DrawRectangleRec(this->rect, col);
     Rectangle src = {0, 0, 34, 24};
-    DrawTextureRec(this->texture, src, this->space->pos, WHITE);
+    DrawTextureRec(texture, src, space->pos, WHITE);
 }
 
 void Player::update(){
     physicsHandler(this);
-    this->rect.x = this->space->pos.x;
-    this->rect.y = this->space->pos.y;
-    printPlayerDebug(this);
+    rect.x = space->pos.x;
+    rect.y = space->pos.y;
+    //printPlayerDebug(this);
+    handleCollision();
 }
 
 
+void Player::handleCollision(){
+    list<Pipe*>* pipes = Pipe::pipes;
+    if(!pipes) return;
+    auto iter = pipes->begin();
 
+    for(; iter != pipes->end(); iter++){
+        Pipe* pipe = *iter;
+        Rectangle* rects = pipe->getColliders();
+
+        if(CheckCollisionRecs(rect, rects[0])){
+            frozen = true;
+        }
+        else if(CheckCollisionRecs(rect, rects[1])){
+            frozen = true;
+        }
+
+        free(rects);
+    }
+}

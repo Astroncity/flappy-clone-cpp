@@ -1,3 +1,4 @@
+#pragma once
 #include <stdlib.h>
 #include "raylib.h"
 #include "space.hpp"
@@ -13,4 +14,7 @@ class Player{
         Rectangle rect;
         Texture2D texture;
         Vector2 velocity;
+        bool frozen = false;
+    private:
+        void handleCollision();
 };
