@@ -1,0 +1,42 @@
+
+#!/bin/bash
+
+
+#colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+RESET='\033[0m'
+ACTION="$RED [ACTION] $RESET"
+INFO="$BLUE [INFO] $RESET"
+
+# Directory containing your source code (.cpp files)
+SOURCE_DIR="."
+
+# Output executable name
+OUTPUT_NAME="main"
+
+# Compiler flags
+CXXFLAGS="-Wall -Wextra -Werror -g -L lib/ -I include/ -lraylib"
+
+# Find all .cpp files in SOURCE_DIR
+CPP_FILES=$(find "$SOURCE_DIR" -name "*.cpp")
+
+# Compile each .cpp file individually
+for file in $CPP_FILES; do
+    printf "$ACTION Compiling $file...\n"
+    g++ "$file" -o "${file%.cpp}.o" -c $CXXFLAGS
+done
+
+# Combine all object files into one executable
+printf "$ACTION Linking object files...\n"
+g++ ${CPP_FILES//.cpp/.o} -o "$OUTPUT_NAME" $CXXFLAGS
+
+printf "$INFO Removing tmp files...\n"
+for file in $CPP_FILES; do
+    printf "$ACTION removing ${file%.cpp}.o \n"
+    rm "${file%.cpp}.o"
+done
+
+printf "$INFO Compilation complete. Executable '$OUTPUT_NAME' created."
