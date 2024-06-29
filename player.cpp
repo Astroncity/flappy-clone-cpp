@@ -11,14 +11,14 @@ static inline void physicsHandler(Player* plr){
 
     if(plr->rect.y > 0){
         if(IsKeyPressed(KEY_SPACE)){
-            plr->velocity.y -= 2;
+            plr->velocity.y = -2;
         }
     }
     else{
         plr->velocity.y = 2;
     }
     // gravity, 
-    plr->velocity.y += 4 * GetFrameTime();
+    plr->velocity.y += 6 * GetFrameTime();
     
     plr->space->pos.x += plr->velocity.x;
     plr->space->pos.y += plr->velocity.y;

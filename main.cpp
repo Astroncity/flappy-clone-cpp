@@ -9,6 +9,11 @@ const char* floorPath = "images/base.png";
 Texture2D backgroundPNG;
 Texture2D floorPNG;
 
+
+f32 floorOffset = 0;
+f32 cityOffset = 0;
+f32 globalScrollSpeed = 100;
+
 void drawBackground(){
     // Background image is too narrow to cover entire screen
     // so we'll draw it a few times over
@@ -16,14 +21,24 @@ void drawBackground(){
     const i32 texWidth = 288;
 
     for(int i = 0; i < 4; i++){
-        DrawTexture(backgroundPNG, i * texWidth, 0, WHITE);
+        DrawTexture(backgroundPNG, i * texWidth - cityOffset, 0, WHITE);
+    }
+
+    cityOffset += globalScrollSpeed/5 * GetFrameTime();
+    if(cityOffset >= 288){
+        cityOffset = 0;
     }
 }
 
 
 void drawFloor(){
     for(int i = 0; i < 4; i++){
-        DrawTexture(floorPNG, i * 336, 512 - 112, WHITE);
+        DrawTexture(floorPNG, i * 336 - floorOffset, 512 - 112, WHITE);
+    }
+
+    floorOffset += globalScrollSpeed * GetFrameTime();
+    if(floorOffset >= 336){
+        floorOffset = 0;
     }
 }
 
@@ -59,7 +74,7 @@ int main(void) {
 
     backgroundPNG = LoadTextureFromImage(LoadImage(backgroundPath));
     floorPNG = LoadTextureFromImage(LoadImage(floorPath));
-    PipeHandler* pipeHandler = new PipeHandler(3, 50);
+    PipeHandler* pipeHandler = new PipeHandler(3, globalScrollSpeed);
 
     while(!WindowShouldClose()){
         state->updateState();
