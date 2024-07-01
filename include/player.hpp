@@ -9,7 +9,7 @@ class Player{
         void drawPlayer();
         void update();
         
-
+        i32 score = 0;
         Space* space;
         Rectangle rect;
         Texture2D texture;

@@ -1,6 +1,7 @@
 #include "pipe.hpp"
 #include "defs.h"
 #include "raylib.h"
+#include "soundManager.hpp"
 #include <stdlib.h>
 Texture2D baseTex;
 bool loadedTex = false;
@@ -18,9 +19,9 @@ void validatePipe(){
 
 
 
-Pipe::Pipe(f32 x, f32 toph, f32 both, f32 gap){
+Pipe::Pipe(f32 x, f32 toph, f32 both, f32 gap, Player* player){
     validatePipe();
-    //const i32 gap = 20;
+    this->player = player;
 
     topTex = baseTex;
     botTex = topTex;
@@ -72,6 +73,15 @@ void Pipe::draw(){
 }
 
 
+void Pipe::score(){
+    if(x < player->space->pos.x && !scored){
+        player->score++;
+        scored = true;
+        PlaySound(SoundManager::score);
+    }
+}
+
+
 i32 Pipe::scroll(f32 speed){
     
     const i32 sh = 512;
@@ -84,12 +94,14 @@ i32 Pipe::scroll(f32 speed){
     topRec = {x, -originOffset + toph, w, h};
     botRec = {x, sh + originOffset - both, w, h};
 
+    score();
+
+
     if(x < -topTex.width/2.0){
         return MARKED_FOR_DELETION;
     }
     else{
         return 0;
     }
-
 }
 

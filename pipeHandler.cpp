@@ -1,14 +1,13 @@
 #include "pipeHandler.hpp"
 #include "pipe.hpp"
-#include <iostream>
 #include <random>
 
-PipeHandler::PipeHandler(const f64 pipeCooldown, const f32 scrollSpeed)
-    : pipeCooldown(pipeCooldown),
-      scrollSpeed(scrollSpeed){}
+PipeHandler::PipeHandler(const f64 pipeCooldown, const f32 scrollSpeed): pipeCooldown(pipeCooldown){
+    this->scrollSpeed = scrollSpeed;
+    timer = 0;
+}
 
-
-void PipeHandler::runPipes(){
+void PipeHandler::runPipes(Player* player){
     if(!Pipe::pipes){
         Pipe::pipes = new list<Pipe*>();
     }
@@ -37,10 +36,10 @@ void PipeHandler::runPipes(){
         i32 topH = dis(gen);
         remainder = 512 - topH;
         i32 widthOffset = 26;
-        dis = std::uniform_int_distribution<>(30, 50);
+        dis = std::uniform_int_distribution<>((i32)(30 * 1.5), (i32)(50 * 1.5));
         i32 gap = dis(gen);
     
-        new Pipe(800 + widthOffset, remainder, topH, gap);
+        new Pipe(800 + widthOffset, remainder, topH, gap, player);
     }
 }
 
